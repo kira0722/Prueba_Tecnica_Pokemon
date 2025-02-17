@@ -4,20 +4,28 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Pokemon } from './Entity/pokemon.entity';
 import { SearchLog } from './Entity/search-log.entity';
+import { PokemonRating } from './Entity/pokemon-rating.entity';
+import { CreateRateDto } from './dto/create-rate.dto';
 import { firstValueFrom } from 'rxjs';
 @Injectable()
 export class PokemonService {
 
   private readonly pokeApiUrl = 'https://pokeapi.co/api/v2';
 
+
+  //constructor entidades
   constructor(
     private readonly httpService: HttpService,
     @InjectRepository(Pokemon)
     private readonly pokemonRepository: Repository<Pokemon>,
     @InjectRepository(SearchLog)
-    private readonly searchLogRepository: Repository<SearchLog>
+    private readonly searchLogRepository: Repository<SearchLog>,
+    @InjectRepository(PokemonRating)
+    private readonly ratingRepository: Repository<PokemonRating>,
   ){}
 
+
+  //metodo obtener pokemon por nombre
   async getOne(name: string): Promise<any> {
     await this.logSearch('getOne', { name });
     try {
@@ -32,13 +40,24 @@ export class PokemonService {
     }
   }
 
-
+  //metodo obtener pokemones listados con offset y limit
   async getAll(offset = 0, limit = 20): Promise<any> {
     await this.logSearch('getAll', { offset, limit });
     const response = await firstValueFrom(
       this.httpService.get(`${this.pokeApiUrl}/pokemon?offset=${offset}&limit=${limit}`)
     );
     return response.data;
+  }
+
+
+  //metodo calificar pokemon (1-5)
+  async ratePokemon(createRateDto: CreateRateDto): Promise<PokemonRating> {
+    await this.logSearch('ratePokemon', createRateDto);
+    const rating = this.ratingRepository.create({
+      pokemonId: createRateDto.pokemonId,
+      rating: createRateDto.puntuation,
+    });
+    return this.ratingRepository.save(rating);
   }
 
   private async savePokemonToDB(data: any) {

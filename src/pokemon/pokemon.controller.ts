@@ -18,4 +18,9 @@ export class PokemonController {
   ) {
     return this.pokemonService.getAll(offset ? Number(offset) : 0, limit ? Number(limit) : 20);
   }
+
+  @Post('rate')
+  async ratePokemon(@Body() createRateDto: CreateRateDto) {
+    return this.pokemonService.ratePokemon(createRateDto);
+  }
 }
