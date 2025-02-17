@@ -1,12 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './pokemon.service';
+import { Controller, Get, Param, Query, Post, Body } from '@nestjs/common';
+import { PokemonService } from './pokemon.service';
+import { CreateRateDto } from './dto/create-rate.dto';
 
-@Controller()
-export class AppController {
-  constructor(private readonly appService: AppService) {}
+@Controller('pokemon')
+export class PokemonController {
+  constructor(private readonly pokemonService: PokemonService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('name/:name')
+  async getOne(@Param('name') name: string) {
+    return this.pokemonService.getOne(name);
   }
 }

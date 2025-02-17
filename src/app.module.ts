@@ -8,11 +8,11 @@ import { PokemonModule } from './pokemon/pokemon.module';
       type: 'postgres',
       host: 'localhost',
       port: 5432,
-      username: 'postgres',       // Reemplaza por tu usuario de PostgreSQL
-      password: 'admin',     // Reemplaza por tu contraseña
-      database: 'pokemon_prueba',  // Reemplaza por el nombre de tu BD
+      username: 'postgres',    
+      password: 'admin',  
+      database: 'pokemon_prueba', 
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true, // Solo en desarrollo; en producción usar migraciones
+      synchronize: true,
     }),
     PokemonModule,
   ],

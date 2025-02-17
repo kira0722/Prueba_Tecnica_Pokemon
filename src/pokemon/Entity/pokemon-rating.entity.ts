@@ -6,7 +6,7 @@ export class PokemonRating {
   id: number;
 
   @Column()
-  pokemonId: number; // ID del Pokémon (según PokeAPI)
+  pokemonId: number;
 
   @Column({ type: 'int' })
   rating: number;
