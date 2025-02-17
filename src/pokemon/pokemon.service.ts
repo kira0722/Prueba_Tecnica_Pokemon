@@ -60,6 +60,27 @@ export class PokemonService {
     return this.ratingRepository.save(rating);
   }
 
+
+  //metodo de obtener top mejores calificados (pokemon)
+  async getTopRated(top: number): Promise<any[]> {
+    const qb = this.ratingRepository.createQueryBuilder('rating')
+      .select('rating.pokemonId', 'pokemonId')
+      .addSelect('AVG(rating.rating)', 'avgRating')
+      .groupBy('rating.pokemonId')
+      .orderBy('"avgRating"', 'DESC') // Usamos comillas dobles para que Postgre reconozca el alias
+      .limit(top);
+  
+    const results = await qb.getRawMany();
+  
+    // Se unen los datos de la entidad Pokemon para incluir más detalles
+    const topPokemons = results.map(result => ({
+      pokemonId: result.pokemonId,
+      avgRating: parseFloat(result.avgRating)
+    }));
+  
+    return topPokemons;
+  }
+
   private async savePokemonToDB(data: any) {
     const existing = await this.pokemonRepository.findOne({ where: { id: data.id } });
     if (!existing) {

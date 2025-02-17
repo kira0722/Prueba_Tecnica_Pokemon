@@ -23,4 +23,9 @@ export class PokemonController {
   async ratePokemon(@Body() createRateDto: CreateRateDto) {
     return this.pokemonService.ratePokemon(createRateDto);
   }
+
+  @Get('top')
+  async getTopRated(@Query('top') top: number) {
+    return this.pokemonService.getTopRated(top ? Number(top) : 5);
+  }
 }
