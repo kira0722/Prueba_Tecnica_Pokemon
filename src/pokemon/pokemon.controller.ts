@@ -10,4 +10,12 @@ export class PokemonController {
   async getOne(@Param('name') name: string) {
     return this.pokemonService.getOne(name);
   }
+
+  @Get()
+  async getAll(
+    @Query('offset') offset?: number,
+    @Query('limit') limit?: number,
+  ) {
+    return this.pokemonService.getAll(offset ? Number(offset) : 0, limit ? Number(limit) : 20);
+  }
 }

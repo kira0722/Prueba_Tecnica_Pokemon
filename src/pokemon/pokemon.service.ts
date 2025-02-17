@@ -32,6 +32,15 @@ export class PokemonService {
     }
   }
 
+
+  async getAll(offset = 0, limit = 20): Promise<any> {
+    await this.logSearch('getAll', { offset, limit });
+    const response = await firstValueFrom(
+      this.httpService.get(`${this.pokeApiUrl}/pokemon?offset=${offset}&limit=${limit}`)
+    );
+    return response.data;
+  }
+
   private async savePokemonToDB(data: any) {
     const existing = await this.pokemonRepository.findOne({ where: { id: data.id } });
     if (!existing) {
