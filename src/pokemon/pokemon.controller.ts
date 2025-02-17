@@ -28,4 +28,17 @@ export class PokemonController {
   async getTopRated(@Query('top') top: number) {
     return this.pokemonService.getTopRated(top ? Number(top) : 5);
   }
+
+  @Get('search')
+  async searchPokemon(
+    @Query('name') name: string,
+    @Query('ope') ope: string,
+    @Query('base_experience') base_experience: number,
+  ) {
+    return this.pokemonService.searchPokemon(
+      name,
+      ope,
+      base_experience ? Number(base_experience) : 0,
+    );
+  }
 }

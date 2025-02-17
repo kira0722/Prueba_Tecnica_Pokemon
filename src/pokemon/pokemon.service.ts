@@ -67,18 +67,53 @@ export class PokemonService {
       .select('rating.pokemonId', 'pokemonId')
       .addSelect('AVG(rating.rating)', 'avgRating')
       .groupBy('rating.pokemonId')
-      .orderBy('"avgRating"', 'DESC') // Usamos comillas dobles para que Postgre reconozca el alias
+      .orderBy('"avgRating"', 'DESC')
       .limit(top);
   
     const results = await qb.getRawMany();
   
-    // Se unen los datos de la entidad Pokemon para incluir más detalles
     const topPokemons = results.map(result => ({
       pokemonId: result.pokemonId,
       avgRating: parseFloat(result.avgRating)
     }));
   
     return topPokemons;
+  }
+
+  //metodo buscar pokemones con filtros
+  async searchPokemon(name: string, ope: string, base_experience: number): Promise<Pokemon[]> {
+    await this.logSearch('searchPokemon', { name, ope, base_experience });
+    const qb = this.pokemonRepository.createQueryBuilder('pokemon');
+
+    if (name) {
+      qb.andWhere('LOWER(pokemon.name) LIKE :name', { name: `%${name.toLowerCase()}%` });
+    }
+
+    if (base_experience !== undefined && ope) {
+      let operator: string;
+      switch (ope) {
+        case 'gt':
+          operator = '>';
+          break;
+        case 'lt':
+          operator = '<';
+          break;
+        case 'ge':
+          operator = '>=';
+          break;
+        case 'le':
+          operator = '<=';
+          break;
+        case 'eq':
+          operator = '=';
+          break;
+        default:
+          operator = '=';
+      }
+      qb.andWhere(`pokemon.baseExperience ${operator} :base_experience`, { base_experience });
+    }
+
+    return qb.getMany();
   }
 
   private async savePokemonToDB(data: any) {
